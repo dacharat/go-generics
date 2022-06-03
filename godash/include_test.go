@@ -39,3 +39,21 @@ func (s *GodashTestSuite) TestIncludes() {
 		s.True(result)
 	})
 }
+
+func (s *GodashTestSuite) TestIncludesBy() {
+	s.Run("includes odd number", func() {
+		nums := []int{2, 3, 4}
+
+		result := godash.IncludesBy(nums, func(n int) bool { return n%2 != 0 })
+
+		s.True(result)
+	})
+
+	s.Run("not include odd number", func() {
+		nums := []int{2, 4, 6}
+
+		result := godash.IncludesBy(nums, func(n int) bool { return n%2 != 0 })
+
+		s.False(result)
+	})
+}
