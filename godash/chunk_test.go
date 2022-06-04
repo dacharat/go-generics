@@ -1,23 +1,66 @@
 package godash_test
 
-import "github.com/dacharat/go-generics/godash"
+import (
+	"github.com/dacharat/go-generics/godash"
+)
 
-func (s *GodashTestSuite) TestChunk() {
-	s.Run("invalid size", func() {
-		result := godash.Chunk([]string{"A"}, 0)
+type chunkTestCase[T any] struct {
+	name     string
+	input    []T
+	size     int
+	expected [][]T
+}
 
-		s.Nil(result)
-	})
+func (s *GodashTestSuite) TestChunkString() {
+	testcases := []chunkTestCase[string]{
+		{
+			name:     "invalid size",
+			input:    []string{"A"},
+			expected: nil,
+		},
+		{
+			name:  "chunk 2",
+			input: []string{"A", "B", "C", "D"},
+			size:  2,
+			expected: [][]string{
+				{"A", "B"},
+				{"C", "D"},
+			},
+		},
+	}
 
-	s.Run("chunk 2", func() {
-		expected := [][]string{
-			{"A", "B"},
-			{"C", "D"},
-		}
-		str := []string{"A", "B", "C", "D"}
+	for _, tc := range testcases {
+		s.Run(tc.name, func() {
+			result := godash.Chunk(tc.input, tc.size)
 
-		result := godash.Chunk(str, 2)
+			s.Equal(result, tc.expected)
+		})
+	}
+}
 
-		s.Equal(result, expected)
-	})
+func (s *GodashTestSuite) TestChunkInt() {
+	testcases := []chunkTestCase[int]{
+		{
+			name:     "invalid size",
+			input:    []int{1},
+			expected: nil,
+		},
+		{
+			name:  "chunk 2",
+			input: []int{1, 2, 3, 4},
+			size:  2,
+			expected: [][]int{
+				{1, 2},
+				{3, 4},
+			},
+		},
+	}
+
+	for _, tc := range testcases {
+		s.Run(tc.name, func() {
+			result := godash.Chunk(tc.input, tc.size)
+
+			s.Equal(result, tc.expected)
+		})
+	}
 }

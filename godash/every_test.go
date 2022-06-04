@@ -2,20 +2,59 @@ package godash_test
 
 import "github.com/dacharat/go-generics/godash"
 
-func (s *GodashTestSuite) TestEvery() {
-	s.Run("every are true", func() {
-		nums := []int{2, 4, 6}
+type everyTestCase[T any] struct {
+	name     string
+	input    []T
+	fun      func(T) bool
+	expected bool
+}
 
-		result := godash.Every(nums, func(n int) bool { return n%2 == 0 })
+func (s *GodashTestSuite) TestEveryInt() {
+	testcases := []everyTestCase[int]{
+		{
+			name:     "every are true",
+			input:    []int{2, 4, 6},
+			fun:      func(n int) bool { return n%2 == 0 },
+			expected: true,
+		},
+		{
+			name:     "something false",
+			input:    []int{2, 3, 6},
+			fun:      func(n int) bool { return n%2 == 0 },
+			expected: false,
+		},
+	}
 
-		s.Equal(result, true)
-	})
+	for _, tc := range testcases {
+		s.Run(tc.name, func() {
+			result := godash.Every(tc.input, tc.fun)
 
-	s.Run("something false", func() {
-		nums := []int{2, 3, 6}
+			s.Equal(result, tc.expected)
+		})
+	}
+}
 
-		result := godash.Every(nums, func(n int) bool { return n%2 == 0 })
+func (s *GodashTestSuite) TestEveryString() {
+	testcases := []everyTestCase[string]{
+		{
+			name:     "every are true",
+			input:    []string{"123", "45", "6"},
+			fun:      func(s string) bool { return len(s) < 4 },
+			expected: true,
+		},
+		{
+			name:     "something false",
+			input:    []string{"123", "45", "6"},
+			fun:      func(s string) bool { return len(s) == 0 },
+			expected: false,
+		},
+	}
 
-		s.Equal(result, false)
-	})
+	for _, tc := range testcases {
+		s.Run(tc.name, func() {
+			result := godash.Every(tc.input, tc.fun)
+
+			s.Equal(result, tc.expected)
+		})
+	}
 }
